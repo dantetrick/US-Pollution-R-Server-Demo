@@ -11,11 +11,11 @@ pkgs <- c("readr", "lubridate", "RODBC","tidyr","stringr","lattice",
 sapply(pkgs, require, character.only = T)
 
 # Set Paths 
-Main_Path <- "C:/Users/dan.tetrick/Documents/R Server Demo/"
+Main_Path <- "C:/Users/dan.tetrick/Documents/US Pollution R Server/"
 Results_Path <- paste0(Main_Path,"Results/")
 Input_Path <- paste0(Main_Path,"Input Data/")
 Model_Code <- paste0(Main_Path,"Model Code/")
-SQLConn_Path <- "~/SQL Server Management Studio/"
+SQLConn_Path <- "~/SQL Server Management Studio/Login Strings/"
 
 # Load SQL Connection String
 load(paste0(SQLConn_Path,"Windows SQL String - R Server Demo.Rda"))
@@ -264,3 +264,4 @@ rxPredict(modelObject = CO_LM_Model,
           overwrite = T)
 
 rxGetInfo(data = df_sql_Pred, numRows = 2, getVarInfo =T)
+

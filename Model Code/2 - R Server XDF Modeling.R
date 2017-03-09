@@ -1,9 +1,7 @@
 # Set Options
 options(stringsAsFactors = F)
 options(scipen = 999)
-options(repos=structure(c(CRAN="https://mran.revolutionanalytics.com/snapshot/2017-02-18/")))
-.libPaths()
-devtools::install_github("RevolutionAnalytics/dplyrXdf")
+
 # Select Packages to Load
 pkgs <- c("readr", "lubridate", "corrplot", "tidyr","stringr","lattice",
           "RevoScaleR","RevoMods", "dplyr","dplyrXdf")
@@ -12,7 +10,7 @@ pkgs <- c("readr", "lubridate", "corrplot", "tidyr","stringr","lattice",
 sapply(pkgs, require, character.only = T)
 
 # Set Paths 
-Main_Path <- "C:/Users/dan.tetrick/Documents/R Server Demo/"
+Main_Path <- "C:/Users/dan.tetrick/Documents/US Pollution R Server/"
 Results_Path <- paste0(Main_Path,"Results/")
 Input_Path <- paste0(Main_Path,"Input Data/")
 Model_Code <- paste0(Main_Path,"Model Code/")
@@ -92,7 +90,7 @@ rxHistogram(~ O3_MEAN, data = df_Xdf,
             histType = "Percent")
 
 # Sulfur Dioxide
-rxHistogram(~ SO2_MEAN, data = df_Xdf, 
+rxHistogram(~ I(log(SO2_MEAN)), data = df_Xdf, 
             histType = "Percent")
 
 # Carbon Monoxide 

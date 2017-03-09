@@ -11,7 +11,7 @@ pkgs <- c("readr", "lubridate", "tidyr","stringr","lattice",
 sapply(pkgs, require, character.only = T)
 
 # Set Paths 
-Main_Path <- "C:/Users/dan.tetrick/Documents/R Server Demo/"
+Main_Path <- "C:/Users/dan.tetrick/Documents/US Pollution R Server/"
 Results_Path <- paste0(Main_Path,"Results/")
 Input_Path <- paste0(Main_Path,"Input Data/")
 Model_Code <- paste0(Main_Path,"Model Code/")
@@ -22,6 +22,8 @@ source(paste0(Model_Code,"Dim Date Creator.R"))
 
 # Load raw Pollution data
 df <- read_csv(paste0(Input_Path, "pollution_us_2000_2016.csv"))
+
+which(grepl(",",x = df$Address))
 
 # Create Dim Date Key
 Dates <- Dim_Date_Creator("2000-01-01", "2020-12-31")
