@@ -1,11 +1,10 @@
 # Set Options
 options(stringsAsFactors = F)
 options(scipen = 999)
-options(repos=structure(c(CRAN="https://mran.revolutionanalytics.com/snapshot/2017-02-01/")))
 
 # Select Packages to Load
-pkgs <- c("readr", "lubridate", "tidyr","stringr","lattice",
-          "RevoScaleR","RevoMods", "dplyr","dplyrXdf")
+pkgs <- c("readr", "lubridate", "tidyr", "stringr",
+          "RevoScaleR", "RevoMods", "dplyr","dplyrXdf")
 
 # Load Libraries and Source Codes
 sapply(pkgs, require, character.only = T)
@@ -15,15 +14,16 @@ Main_Path <- "C:/Users/dan.tetrick/Documents/US Pollution R Server/"
 Results_Path <- paste0(Main_Path,"Results/")
 Input_Path <- paste0(Main_Path,"Input Data/")
 Model_Code <- paste0(Main_Path,"Model Code/")
+Graphics_Path <- paste0(Main_Path,"Graphics/")
 
 # Load Data
 source(paste0(Model_Code,"Trim.R"))
 source(paste0(Model_Code,"Dim Date Creator.R"))
+source(paste0(Model_Code,"ggplot Var Summary.R"))
+source(paste0(Model_Code,"Interaction Formula.R"))
 
 # Load raw Pollution data
 df <- read_csv(paste0(Input_Path, "pollution_us_2000_2016.csv"))
-
-which(grepl(",",x = df$Address))
 
 # Create Dim Date Key
 Dates <- Dim_Date_Creator("2000-01-01", "2020-12-31")
@@ -64,6 +64,7 @@ df <- tbl_df(df) %>%
       mutate_each(funs(ifelse(is.na(.), CO_MEDIAN, .)), matches("CO_MEAN_LAG")) %>% 
       left_join(.,Dates[,c("DATE","DIM_DATE_KEY")], by = "DATE") 
 
+# Check for NA's
 sapply(df[,names(df)[which(grepl("_MEDIAN|_MEAN",names(df)))]],function(x) {length(which(is.na(x)))})
 
 #####################################################
@@ -75,7 +76,8 @@ Max_Date <- max(df$DATE)
 
 # Add Historical Lag from last 7 days to projections
 df_HistLag <- df %>% filter(DATE >= Max_Date - 7)
-# unique(df_HistLag$ADDRESS)
+
+# Check for NA's
 sapply(df_HistLag[,names(df_HistLag)[which(grepl("_MEAN",names(df_HistLag)))]],function(x) {length(which(is.na(x)))})
 
 # Create List of Unique Address Codes
@@ -133,6 +135,7 @@ df_Proj <- left_join(df_Proj, df_Mean, by = c("DIM_ADDRESS_KEY","MONTH","DAY")) 
   mutate_each(funs(ifelse(is.na(.), CO_MEDIAN, .)), matches("CO_MEAN_LAG")) %>% 
   filter(DATE >= "2016-06-01")
 
+# Check for NA's
 sapply(df_Proj[,names(df_Proj)[which(grepl("_MEDIAN|_MEAN",names(df_Proj)))]],
        function(x) {length(which(is.na(x)))})
 
@@ -151,3 +154,21 @@ write.csv(df, paste0(Input_Path,"US Pollution Data 2010_2016.csv"),row.names = F
 write.csv(df_Proj, paste0(Input_Path,"US Pollution 2016_2017 Projections.csv"),row.names = F)
 write.csv(Dates, paste0(Input_Path,"Date Dimension Table.csv"),row.names = F)
 write.csv(Address_Table, paste0(Input_Path,"Pollution Test Site Address.csv"),row.names = F)
+
+#########################################
+# Plot Dependent Variable Summaries
+#########################################
+
+# GG Plot Numeric Variables
+ggsplits <- split(df$NO2_MEAN, df$ADDRESS)
+# i = 1
+for (i in 1:length(ggsplits)){
+  
+  varName <- names(ggsplits[i])
+
+  tryCatch(GGVarSummary(ggsplits[[i]],
+             varName = paste0(varName," N02 Mean Pollutant"),
+             Bins = 30,
+             Path = Graphics_Path),
+             error = function(e){print(paste0("ERROR ", "i = ", i))})
+  }

@@ -1,7 +1,6 @@
 # Set Options
 options(stringsAsFactors = F)
 options(scipen = 999)
-options(repos=structure(c(CRAN="https://mran.revolutionanalytics.com/snapshot/2017-02-18/")))
 
 # Select Packages to Load
 pkgs <- c("readr", "lubridate", "RODBC","tidyr","stringr","lattice",
@@ -18,11 +17,10 @@ Model_Code <- paste0(Main_Path,"Model Code/")
 SQLConn_Path <- "~/SQL Server Management Studio/Login Strings/"
 
 # Load SQL Connection String
-load(paste0(SQLConn_Path,"Windows SQL String - R Server Demo.Rda"))
+load(paste0(SQLConn_Path,"Windows Trusted SQL String - R Server Demo.Rda"))
 # load(paste0(SQLConn_Path, "Slalom Azure SQL String.Rda"))
 
 # Source Functions
-# Load Data
 source(paste0(Model_Code,"Trim.R"))
 source(paste0(Model_Code,"Dim Date Creator.R"))
 source(paste0(Model_Code,"Interaction Formula.R"))
@@ -81,7 +79,8 @@ rxGetInfo(data = df_sql_Score, numRows = 5, getVarInfo =T)
 
 df_sql_Pred <- RxSqlServerData(table = "Fact_US_Pollution_SQLContextPredicted", 
                                connectionString = sqlConnString,
-                               rowsPerRead = sqlRowsPerRead, colInfo = ccColInfo)
+                               rowsPerRead = sqlRowsPerRead, 
+                               colInfo = ccColInfo)
 rxGetInfo(data = df_sql_Pred, numRows = 5, getVarInfo =T)
 
 # Create transformations
@@ -132,21 +131,7 @@ names(df_sql)
 
 # Create Formulas for Interaction Models
 NO2_Formula <- Interaction_Formula(DV = "NO2_MEAN",
-                    IVint = c("CO_MEAN","SO2_MEAN","O3_MEAN"),
-                    IVnoint = c("YEAR", "MONTH", "DAY", "DIM_ADDRESS_KEY",
-                                "NO2_MEAN_LAG_1", "O3_MEAN_LAG_1", "SO2_MEAN_LAG_1",
-                                "CO_MEAN_LAG_1", "NO2_MEAN_LAG_2", "O3_MEAN_LAG_2",
-                                "SO2_MEAN_LAG_2", "CO_MEAN_LAG_2", "NO2_MEAN_LAG_3",
-                                "O3_MEAN_LAG_3", "SO2_MEAN_LAG_3", "CO_MEAN_LAG_3",
-                                "NO2_MEAN_LAG_4", "O3_MEAN_LAG_4", "SO2_MEAN_LAG_4",
-                                "CO_MEAN_LAG_4", "NO2_MEAN_LAG_5", "O3_MEAN_LAG_5",
-                                "SO2_MEAN_LAG_5", "CO_MEAN_LAG_5", "NO2_MEAN_LAG_6",
-                                "O3_MEAN_LAG_6", "SO2_MEAN_LAG_6", "CO_MEAN_LAG_6",
-                                "NO2_MEAN_LAG_7", "O3_MEAN_LAG_7", "SO2_MEAN_LAG_7",
-                                "CO_MEAN_LAG_7"))
-
-O3_Formula <- Interaction_Formula(DV = "O3_MEAN",
-                                   IVint = c("CO_MEAN", "SO2_MEAN", "NO2_MEAN"),
+                                   IVint = c("CO_MEAN","SO2_MEAN","O3_MEAN"),
                                    IVnoint = c("YEAR", "MONTH", "DAY", "DIM_ADDRESS_KEY",
                                                "NO2_MEAN_LAG_1", "O3_MEAN_LAG_1", "SO2_MEAN_LAG_1",
                                                "CO_MEAN_LAG_1", "NO2_MEAN_LAG_2", "O3_MEAN_LAG_2",
@@ -159,6 +144,19 @@ O3_Formula <- Interaction_Formula(DV = "O3_MEAN",
                                                "NO2_MEAN_LAG_7", "O3_MEAN_LAG_7", "SO2_MEAN_LAG_7",
                                                "CO_MEAN_LAG_7"))
 
+O3_Formula <- Interaction_Formula(DV = "O3_MEAN",
+                                  IVint = c("CO_MEAN", "SO2_MEAN", "NO2_MEAN"),
+                                  IVnoint = c("YEAR", "MONTH", "DAY", "DIM_ADDRESS_KEY",
+                                              "NO2_MEAN_LAG_1", "O3_MEAN_LAG_1", "SO2_MEAN_LAG_1",
+                                              "CO_MEAN_LAG_1", "NO2_MEAN_LAG_2", "O3_MEAN_LAG_2",
+                                              "SO2_MEAN_LAG_2", "CO_MEAN_LAG_2", "NO2_MEAN_LAG_3",
+                                              "O3_MEAN_LAG_3", "SO2_MEAN_LAG_3", "CO_MEAN_LAG_3",
+                                              "NO2_MEAN_LAG_4", "O3_MEAN_LAG_4", "SO2_MEAN_LAG_4",
+                                              "CO_MEAN_LAG_4", "NO2_MEAN_LAG_5", "O3_MEAN_LAG_5",
+                                              "SO2_MEAN_LAG_5", "CO_MEAN_LAG_5", "NO2_MEAN_LAG_6",
+                                              "O3_MEAN_LAG_6", "SO2_MEAN_LAG_6", "CO_MEAN_LAG_6",
+                                              "NO2_MEAN_LAG_7", "O3_MEAN_LAG_7", "SO2_MEAN_LAG_7",
+                                              "CO_MEAN_LAG_7"))
 SO2_Formula <- Interaction_Formula(DV = "SO2_MEAN",
                                    IVint = c("CO_MEAN","NO2_MEAN","O3_MEAN"),
                                    IVnoint = c("YEAR", "MONTH", "DAY", "DIM_ADDRESS_KEY",
@@ -174,7 +172,7 @@ SO2_Formula <- Interaction_Formula(DV = "SO2_MEAN",
                                                "CO_MEAN_LAG_7"))
 
 CO_Formula <- Interaction_Formula(DV = "CO_MEAN",
-                                   IVint = c("NO2_MEAN","SO2_MEAN","O3_MEAN"),
+                                  IVint = c("NO2_MEAN","SO2_MEAN","O3_MEAN"),
                                   IVnoint = c("YEAR", "MONTH", "DAY", "DIM_ADDRESS_KEY",
                                               "NO2_MEAN_LAG_1", "O3_MEAN_LAG_1", "SO2_MEAN_LAG_1",
                                               "CO_MEAN_LAG_1", "NO2_MEAN_LAG_2", "O3_MEAN_LAG_2",
@@ -251,7 +249,6 @@ rxPredict(modelObject = SO2_LM_Model,
 CO_LM_Model <- rxLinMod(CO_Formula,
                          data = df_sql)
 summary(CO_LM_Model)
-
 
 rxPredict(modelObject = CO_LM_Model, 
           data = df_sql_Pred,

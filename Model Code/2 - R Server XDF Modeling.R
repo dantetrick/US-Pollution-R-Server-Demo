@@ -38,8 +38,7 @@ ccColInfo <- list(
     type = "numeric")
 )
 
-
-# Create Xdf file from the Cleaned US Pollutin Data 2010 - 2016
+# Create Xdf file from the Cleaned US Pollution Data 2010 - 2016
 inFile <- file.path(Input_Path, "US Pollution Data 2010_2016.csv")
 rxTextToXdf(inFile = inFile,
             outFile = paste0(Input_Path,"rxUS Pollution Data.xdf"),
@@ -90,7 +89,7 @@ rxHistogram(~ O3_MEAN, data = df_Xdf,
             histType = "Percent")
 
 # Sulfur Dioxide
-rxHistogram(~ I(log(SO2_MEAN)), data = df_Xdf, 
+rxHistogram(~ SO2_MEAN, data = df_Xdf, 
             histType = "Percent")
 
 # Carbon Monoxide 
@@ -208,6 +207,7 @@ CO_LM_Model <- rxLinMod(CO_Formula, data = df_Xdf)
 #########################
 # Predictions
 #########################
+
 # Create a df_Pred_Xdf object
 df_Pred_Xdf <- RxXdfData(paste0(Results_Path,"rxPollution Predictions.xdf"))
 rxGetInfo(df_Pred_Xdf, numRows = 2)

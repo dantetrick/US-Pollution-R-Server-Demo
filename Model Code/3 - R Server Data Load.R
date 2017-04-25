@@ -19,7 +19,7 @@ SQLConn_Path <- "~/SQL Server Management Studio/Login Strings/"
 
 # Set Connection String to the SQL DB
 # load(paste0(SQLConn_Path, "Slalom Azure SQL String.Rda"))
-load(paste0(SQLConn_Path, "Windows SQL String - R Server Demo.Rda"))
+load(paste0(SQLConn_Path, "Windows Trusted SQL String - R Server Demo.Rda"))
 
 # Set Comput Context
 rxSetComputeContext("local")
@@ -220,3 +220,5 @@ rxGetInfo(data = sqlProjectionsDS, numRows = 5, getVarInfo =T)
 rxGetInfo(data = sqlDatesDS, numRows = 5, getVarInfo =T)
 rxGetInfo(data = sqlAddressesDS, numRows = 5, getVarInfo =T)
 rxGetInfo(data = sqlPollutionPredXdfDS, numRows = 5, getVarInfo =T)
+
+
