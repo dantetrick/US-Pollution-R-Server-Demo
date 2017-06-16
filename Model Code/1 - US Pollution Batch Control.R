@@ -5,20 +5,24 @@
 # Createor: Dan Tetrick
 # Date: Jan 2017
 
+###################################################################################################
+# Set Options, load libraries, set paths, source custom codes
+###################################################################################################
+
 # Set Options
 options(stringsAsFactors = F)
 options(scipen = 999)
 
 # Select Packages to Load
-pkgs <- c("readr", "lubridate", "tidyr", "stringr", "Matrix", "downloader",
-          "corrplot", "lattice",  "XML","rvest", "dplyr","dplyrXdf")
+pkgs <- c("readr", "lubridate", "tidyr", "stringr", "Matrix", 
+          "corrplot", "lattice", "dplyr","dplyrXdf")
 
 # Load Libraries and Source Codes
 # sapply(pkgs, install.packages)
 sapply(pkgs, require, character.only = T)
 
 # Set Paths 
-Main_Path <- "C:/Users/dan.tetrick/Documents/US Pollution Project/"
+Main_Path <- "C:/Users/dan.tetrick/Documents/US-Pollution-R-Server-Demo/"
 Results_Path <- paste0(Main_Path,"Results/")
 Input_Path <- paste0(Main_Path,"Input Data/")
 Clean_Data_Path <- paste0(Input_Path, "Cleaned Data/")
@@ -40,21 +44,6 @@ sapply(Path_List, function(x) if(!dir.exists(x)){dir.create(str_sub(x, 1, nchar(
 
 # Set Connection String to the SQL DB
 load(paste0(SQL_Path, "Windows Trusted SQL String - R Server Demo.Rda"))
-
-
-# download("https://www.kaggle.com/sogun3/uspollution/downloads/pollution_us_2000_2016.csv.zip",
-#          dest= paste0(Input_Path, "US_Pollution.zip"), mode="wb") 
-# 
-# 
-# 
-# UPC <- tryCatch(
-#     read_html("https://aqsdr1.epa.gov/aqsweb/aqstmp/airdata/download_files.html#Meta") %>%
-#     html_nodes("td a") %>%
-#       html_attr("href") %>%
-#   , 
-#   error = function(e){NA}    # a function that returns NA regardless of what it's passed
-# ) 
-
 
 # Source in Cleaning Functions
 sapply(list.files(Clean_Code_Path, ".R$", full.names = T), source)
@@ -178,11 +167,12 @@ corrplot(Pollution_Cors,"number")
 # NO2 Modeling
 ############################
 
-NO2_Model <- Create_Pollution_Models(df_Hist_Xdf, DV = "NO2_MEAN",
-                        IVint = c("NO2_MEAN", "CO_MEAN","SO2_MEAN","O3_MEAN"),
-                        VarOmit = c("DATE", "COUNTY", "STATE", "SITE_NUM", "DIM_DATE_KEY",
-                                    "CITY", "NO2_MEDIAN", "O3_MEDIAN", "SO2_MEDIAN", "CO_MEDIAN",
-                                    "ADDRESS"))
+NO2_Model <- Create_Pollution_Models(df_Hist_Xdf,
+                                     DV = "NO2_MEAN",
+                                     IVint = c("NO2_MEAN", "CO_MEAN","SO2_MEAN","O3_MEAN"),
+                                     VarOmit = c("DATE", "COUNTY", "STATE", "SITE_NUM", "DIM_DATE_KEY",
+                                                 "CITY", "NO2_MEDIAN", "O3_MEDIAN", "SO2_MEDIAN", "CO_MEDIAN",
+                                                 "ADDRESS"))
 
 NO2_Model$Summary
 
@@ -229,6 +219,7 @@ VarsToKeep <- c("DIM_DATE_KEY", "NO2_PRED", "O3_PRED", "SO2_PRED", "CO_PRED")
 # Create a df_Pred_Xdf object
 df_Pred_Xdf <- RxXdfData(paste0(Results_Path,"rxPollution Predictions.xdf"))
 
+# Predict each pollutant
 df_Pred_Xdf <- Create_Pollution_Predictions(df_Proj_Xdf, NO2_Model$Model,name = "NO2_PRED", VarsToKeep)
 df_Pred_Xdf <- Create_Pollution_Predictions(df_Pred_Xdf, O3_Model$Model,name = "O3_PRED", VarsToKeep)
 df_Pred_Xdf <- Create_Pollution_Predictions(df_Pred_Xdf, CO_Model$Model,name = "CO_PRED", VarsToKeep)

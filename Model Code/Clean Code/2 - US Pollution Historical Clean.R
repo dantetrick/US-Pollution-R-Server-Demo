@@ -11,8 +11,8 @@ Clean_Pollution_Historical <- function(df, write_out = TRUE) {
                     CO_MEAN = mean(CO_MEAN)) %>%
           ungroup() %>% 
           mutate(YEAR = year(DATE),
-                 MONTH = month(DATE),
-                 DAY = day(DATE),
+                 MONTH = as.character(month(DATE)),
+                 DAY = as.character(day(DATE)),
                  STATE = toupper(trim(STATE)),
                  CITY = toupper(trim(CITY)),
                  COUNTY = toupper(trim(COUNTY))) %>%

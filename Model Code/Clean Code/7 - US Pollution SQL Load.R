@@ -1,4 +1,4 @@
-Load_Pollution_SQL <- function() {
+Load_Pollution_SQL <- function(Row.Read = 200000) {
 
 # Set file paths to data to import into SQL Server
 LoadData1 <- file.path(Clean_Data_Path, "US Pollution Data 2010_2016.csv")
@@ -15,7 +15,7 @@ sqlLoadTable4 <- "Dim_Pollution_Addresses"
 sqlLoadTable5 <- "Fact_US_Pollution_XDFPredicted"
 
 # Set SQL Row Count
-sqlRowsPerRead <- 200000
+sqlRowsPerRead <- Row.Read 
 
 ##########################################################
 # Using a SQL Server Data Source and Compute Context
